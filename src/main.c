@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <GL/glut.h>
 #include <curl/curl.h>
 #include <math.h>
 #include <stdio.h>
@@ -2582,8 +2583,61 @@ void reset_model() {
     glfwSetTime(g->day_length / 3.0);
     g->time_changed = 1;
 }
+void display(void)
+{
+glColor3f (1.0, 0.0, 0.0);
+glBegin(GL_POLYGON);
+glVertex3f (0.30, 0.60, 0.0);
+glVertex3f (0.65, 0.60, 0.0);
+glVertex3f (0.65, 0.75, 0.0);
+glVertex3f (0.30, 0.75, 0.0);
+glEnd();
+
+}
+
+void render(void){
+     glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glPushMatrix();
+    glTranslatef(0.0, 0.1, 0.0);
+    display();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, -0.2, 0.0);
+    display();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, -0.5, 0.0);
+    display();
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
 
 int main(int argc, char **argv) {
+    // startCraft(argc, **argv);
+glutInit(&argc, argv);
+glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+glutInitWindowSize (800, 600);
+glutInitWindowPosition (100, 100);
+glutCreateWindow ("Craft menu");
+glutDisplayFunc(render);
+glutMainLoop();
+
+return 0;
+}
+
+int startCraft(int argc, char **argv) {
     // INITIALIZATION //
     curl_global_init(CURL_GLOBAL_DEFAULT);
     srand(time(NULL));
