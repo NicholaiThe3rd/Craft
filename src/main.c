@@ -154,6 +154,7 @@ typedef struct {
     Block copy1;
 } Model;
 
+
 static Model model;
 static Model *g = &model;
 
@@ -2138,6 +2139,23 @@ void on_light() {
     }
 }
 
+void renderButtonBackground(void)
+{
+glColor3f (0.5, 0.5, 0.5);
+glBegin(GL_POLYGON);
+glVertex3f (0.30, 0.60, 0.0);
+glVertex3f (0.65, 0.60, 0.0);
+glVertex3f (0.65, 0.75, 0.0);
+glVertex3f (0.30, 0.75, 0.0);
+glEnd();
+}
+
+void processNormalKeys(unsigned char key, int x, int y) {
+
+	if (key == 27)
+		exit(0);
+}
+
 void on_left_click() {
     State *s = &g->players->state;
     int hx, hy, hz;
@@ -2175,6 +2193,54 @@ void on_middle_click() {
     }
 }
 
+void renderPause(void){
+    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.46, 0.90);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "CRAFT");
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, 0.1, 0.0);
+    renderButtonBackground();
+    glPopMatrix();
+	// When this option is selected, return a value to return to the main game loop
+	// without escaping it.
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.45, 0.76);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Resume");
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, -0.2, 0.0);
+    renderButtonBackground();
+    glPopMatrix();
+
+	// When this option is selected, need to return a value to escape the main game loop
+	// return to the main menu.
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.45, 0.16);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Exit Game");
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
+
 void on_key(GLFWwindow *window, int key, int scancode, int action, int mods) {
     int control = mods & (GLFW_MOD_CONTROL | GLFW_MOD_SUPER);
     int exclusive =
@@ -2193,12 +2259,17 @@ void on_key(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (action != GLFW_PRESS) {
         return;
     }
+	/////////////////////////	Handling Escape Button for Pause			///////////////////
     if (key == GLFW_KEY_ESCAPE) {
         if (g->typing) {
             g->typing = 0;
         }
         else if (exclusive) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	    glutCreateWindow ("Pause menu");
+	    glutDisplayFunc(renderPause);
+            glutKeyboardFunc(processNormalKeys);
+            glutMainLoop();
         }
     }
     if (key == GLFW_KEY_ENTER) {
@@ -2583,22 +2654,6 @@ void reset_model() {
     glfwSetTime(g->day_length / 3.0);
     g->time_changed = 1;
 }
-void renderButtonBackground(void)
-{
-glColor3f (0.5, 0.5, 0.5);
-glBegin(GL_POLYGON);
-glVertex3f (0.30, 0.60, 0.0);
-glVertex3f (0.65, 0.60, 0.0);
-glVertex3f (0.65, 0.75, 0.0);
-glVertex3f (0.30, 0.75, 0.0);
-glEnd();
-}
-
-void processNormalKeys(unsigned char key, int x, int y) {
-
-	if (key == 27)
-		exit(0);
-}
 
 void render(void){
     glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
@@ -2656,6 +2711,8 @@ void render(void){
 
     glutSwapBuffers();
 }
+
+
 
 
 int main(int argc, char **argv) {
