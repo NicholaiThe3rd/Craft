@@ -1,0 +1,39 @@
+\hypertarget{classbuilder_1_1Client}{}\section{builder.\+Client Class Reference}
+\label{classbuilder_1_1Client}\index{builder.\+Client@{builder.\+Client}}
+
+
+Inheritance diagram for builder.\+Client\+:
+% FIG 0
+
+
+Collaboration diagram for builder.\+Client\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classbuilder_1_1Client_a02588c7babef701a3609e44f7ba83977}\label{classbuilder_1_1Client_a02588c7babef701a3609e44f7ba83977}} 
+def {\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, host, port)
+\item 
+\mbox{\Hypertarget{classbuilder_1_1Client_ae97da152d9317fa09c7557e7741a010a}\label{classbuilder_1_1Client_ae97da152d9317fa09c7557e7741a010a}} 
+def {\bfseries authenticate} (self)
+\item 
+\mbox{\Hypertarget{classbuilder_1_1Client_acafa155f4906f3a23059e1cd30118172}\label{classbuilder_1_1Client_acafa155f4906f3a23059e1cd30118172}} 
+def {\bfseries set\+\_\+block} (self, x, y, z, w)
+\item 
+\mbox{\Hypertarget{classbuilder_1_1Client_a884f5ca5df910e82ed1fee3f6aae5140}\label{classbuilder_1_1Client_a884f5ca5df910e82ed1fee3f6aae5140}} 
+def {\bfseries set\+\_\+blocks} (self, blocks, w)
+\item 
+\mbox{\Hypertarget{classbuilder_1_1Client_ac972baa59254fcd4d84a8aa678abbf75}\label{classbuilder_1_1Client_ac972baa59254fcd4d84a8aa678abbf75}} 
+def {\bfseries bitmap} (self, sx, sy, sz, d1, d2, data, lookup)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classbuilder_1_1Client_a96c2c0e990bc9cad36881d2506e29fb9}\label{classbuilder_1_1Client_a96c2c0e990bc9cad36881d2506e29fb9}} 
+{\bfseries conn}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+builder.\+py\end{DoxyCompactItemize}

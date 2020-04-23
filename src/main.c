@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <GL/glut.h>
 #include <curl/curl.h>
 #include <math.h>
 #include <stdio.h>
@@ -152,6 +153,7 @@ typedef struct {
     Block copy0;
     Block copy1;
 } Model;
+
 
 static Model model;
 static Model *g = &model;
@@ -2137,6 +2139,23 @@ void on_light() {
     }
 }
 
+void renderButtonBackground(void)
+{
+glColor3f (0.5, 0.5, 0.5);
+glBegin(GL_POLYGON);
+glVertex3f (0.30, 0.60, 0.0);
+glVertex3f (0.65, 0.60, 0.0);
+glVertex3f (0.65, 0.75, 0.0);
+glVertex3f (0.30, 0.75, 0.0);
+glEnd();
+}
+
+void processNormalKeys(unsigned char key, int x, int y) {
+
+	if (key == 27)
+		exit(0);
+}
+
 void on_left_click() {
     State *s = &g->players->state;
     int hx, hy, hz;
@@ -2174,6 +2193,54 @@ void on_middle_click() {
     }
 }
 
+void renderPause(void){
+    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.46, 0.90);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "CRAFT");
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, 0.1, 0.0);
+    renderButtonBackground();
+    glPopMatrix();
+	// When this option is selected, return a value to return to the main game loop
+	// without escaping it.
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.45, 0.76);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Resume");
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, -0.2, 0.0);
+    renderButtonBackground();
+    glPopMatrix();
+
+	// When this option is selected, need to return a value to escape the main game loop
+	// return to the main menu.
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.45, 0.16);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Exit Game");
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
+
 void on_key(GLFWwindow *window, int key, int scancode, int action, int mods) {
     int control = mods & (GLFW_MOD_CONTROL | GLFW_MOD_SUPER);
     int exclusive =
@@ -2192,12 +2259,17 @@ void on_key(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (action != GLFW_PRESS) {
         return;
     }
+	/////////////////////////	Handling Escape Button for Pause			///////////////////
     if (key == GLFW_KEY_ESCAPE) {
         if (g->typing) {
             g->typing = 0;
         }
         else if (exclusive) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	    glutCreateWindow ("Pause menu");
+	    glutDisplayFunc(renderPause);
+            glutKeyboardFunc(processNormalKeys);
+            glutMainLoop();
         }
     }
     if (key == GLFW_KEY_ENTER) {
@@ -2359,6 +2431,23 @@ void on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
         }
     }
 }
+
+// Skeletonized Escape output to generate pause menu. Pause menu will be generated on ESC press.
+void handle_escape_input()
+{
+}
+
+// Skeletonize pause menu. TODO: Generate two buttons that are "Resume" and "Save And Quit"
+bool generate_pause()
+{
+    boolean quit = false;
+    return quit;
+}
+
+// Skeletonize main menu. TODO: Generate 3 button menu, one "Play", one "Swap Save", and "Quit"
+// In reality the saves will be changing the database based on the save file selected.
+void generate_main()
+{}
 
 void create_window() {
     int window_width = WINDOW_WIDTH;
@@ -2565,6 +2654,7 @@ void parse_buffer(char *buffer) {
     }
 }
 
+
 void reset_model() {
     memset(g->chunks, 0, sizeof(Chunk) * MAX_CHUNKS);
     g->chunk_count = 0;
@@ -2583,7 +2673,74 @@ void reset_model() {
     g->time_changed = 1;
 }
 
-int main(int argc, char **argv) {
+void render(void){
+    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.46, 0.90);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "CRAFT");
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, 0.1, 0.0);
+    renderButtonBackground();
+    glPopMatrix();
+
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.45, 0.76);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Play Game");
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, -0.2, 0.0);
+    renderButtonBackground();
+    glPopMatrix();
+
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.45, 0.46);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Load Save");
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, -0.5, 0.0);
+    renderButtonBackground();
+    glPopMatrix();
+
+    glPushMatrix();
+    glLoadIdentity();
+    glColor3f(1.0f,1.0f,1.0f);
+    glRasterPos2f(0.45, 0.16);
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Options");
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
+
+
+void game_loop() {
+glutInit(&argc, argv);
+glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+glutInitWindowSize (glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
+glutInitWindowPosition (0, 0);
+glutCreateWindow ("Craft menu");
+glutDisplayFunc(render);
+glutKeyboardFunc(processNormalKeys);
+glutMainLoop();
+
     // INITIALIZATION //
     curl_global_init(CURL_GLOBAL_DEFAULT);
     srand(time(NULL));
@@ -2652,10 +2809,10 @@ int main(int argc, char **argv) {
     load_png_texture("textures/sign.png");
 
     // LOAD SHADERS //
-    Attrib block_attrib = {0};
-    Attrib line_attrib = {0};
-    Attrib text_attrib = {0};
-    Attrib sky_attrib = {0};
+    Attrib block_attrib = { 0 };
+    Attrib line_attrib = { 0 };
+    Attrib text_attrib = { 0 };
+    Attrib sky_attrib = { 0 };
     GLuint program;
 
     program = load_program(
@@ -2718,7 +2875,7 @@ int main(int argc, char **argv) {
 
     // INITIALIZE WORKER THREADS
     for (int i = 0; i < WORKERS; i++) {
-        Worker *worker = g->workers + i;
+        Worker* worker = g->workers + i;
         worker->index = i;
         worker->state = WORKER_IDLE;
         mtx_init(&worker->mtx, mtx_plain);
@@ -2752,13 +2909,13 @@ int main(int argc, char **argv) {
 
         // LOCAL VARIABLES //
         reset_model();
-        FPS fps = {0, 0, 0};
+        FPS fps = { 0, 0, 0 };
         double last_commit = glfwGetTime();
         double last_update = glfwGetTime();
         GLuint sky_buffer = gen_sky_buffer();
 
-        Player *me = g->players;
-        State *s = &g->players->state;
+        Player* me = g->players;
+        State* s = &g->players->state;
         me->id = 0;
         me->name[0] = '\0';
         me->buffer = 0;
@@ -2800,7 +2957,7 @@ int main(int argc, char **argv) {
             handle_movement(dt);
 
             // HANDLE DATA FROM SERVER //
-            char *buffer = client_recv();
+            char* buffer = client_recv();
             if (buffer) {
                 parse_buffer(buffer);
                 free(buffer);
@@ -2827,7 +2984,7 @@ int main(int argc, char **argv) {
             for (int i = 1; i < g->player_count; i++) {
                 interpolate_player(g->players + i);
             }
-            Player *player = g->players + g->observe1;
+            Player* player = g->players + g->observe1;
 
             // RENDER 3-D SCENE //
             glClear(GL_COLOR_BUFFER_BIT);
@@ -2890,7 +3047,7 @@ int main(int argc, char **argv) {
                     render_text(&text_attrib, ALIGN_CENTER,
                         g->width / 2, ts, ts, player->name);
                 }
-                Player *other = player_crosshair(player);
+                Player* other = player_crosshair(player);
                 if (other) {
                     render_text(&text_attrib, ALIGN_CENTER,
                         g->width / 2, g->height / 2 - ts - 24, ts,
@@ -2933,6 +3090,8 @@ int main(int argc, char **argv) {
                 }
             }
 
+            // TODO: Similar statement is used to escape from game loop after pause menu.
+
             // SWAP AND POLL //
             glfwSwapBuffers(g->window);
             glfwPollEvents();
@@ -2960,4 +3119,16 @@ int main(int argc, char **argv) {
     glfwTerminate();
     curl_global_cleanup();
     return 0;
+}
+
+
+
+int main(int argc, char** argv) {
+// Isolating the game loop so main menu and save system can be placed here and call the game loop function.
+    
+    // Call Game loop
+    // TODO: Implement GLUT Main menu that allows for swapping between different save files.
+    // The main menu will allow for the database file to be changed through a menu.
+    game_loop();
+
 }
