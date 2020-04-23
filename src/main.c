@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <curl/curl.h>
 #include <math.h>
 #include <stdio.h>
@@ -10,6 +11,7 @@
 #include "auth.h"
 #include "client.h"
 #include "config.h"
+#include <stdbool.h>
 #include "cube.h"
 #include "db.h"
 #include "item.h"
@@ -154,7 +156,7 @@ typedef struct {
     Block copy1;
 } Model;
 
-
+static int launchCraft;
 static Model model;
 static Model *g = &model;
 
@@ -2150,6 +2152,7 @@ glVertex3f (0.30, 0.75, 0.0);
 glEnd();
 }
 
+//determines the keys a user presses and does certain actaions based on them
 void processNormalKeys(unsigned char key, int x, int y) {
 
 	if (key == 27)
@@ -2266,8 +2269,8 @@ void on_key(GLFWwindow *window, int key, int scancode, int action, int mods) {
         }
         else if (exclusive) {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	    glutCreateWindow ("Pause menu");
-	    glutDisplayFunc(renderPause);
+	        glutCreateWindow ("Pause menu");
+	        glutDisplayFunc(renderPause);
             glutKeyboardFunc(processNormalKeys);
             glutMainLoop();
         }
@@ -2440,7 +2443,7 @@ void handle_escape_input()
 // Skeletonize pause menu. TODO: Generate two buttons that are "Resume" and "Save And Quit"
 bool generate_pause()
 {
-    boolean quit = false;
+    bool quit = false;
     return quit;
 }
 
@@ -2673,7 +2676,29 @@ void reset_model() {
     g->time_changed = 1;
 }
 
-void render(void){
+//determines the location a user clicked with their mouse so we can call the button methods
+void handleMouseClick(int button, int state,int x, int y){
+    //we float the values by screen height and width so we can fit them within our
+    //ortho matrix
+    float x1=x/(float)glutGet(GLUT_SCREEN_WIDTH);
+    float y1=y/(float)glutGet(GLUT_SCREEN_HEIGHT);
+    if(((x1>=0.3 && x1<=0.65)&&(y1>=0.15 && y1<=0.3))){
+        launchCraft=1;
+        printf("Launch Craft Called \n");
+        glutLeaveMainLoop();
+    }
+    if(((x1>=0.3 && x1<=0.65)&&(y1>=0.45 && y1<=0.6))){
+        //TODO: clear the glut window and render a new screen that will allow the user to choose a saved world or start a new one
+        printf("Load Save Called \n");
+    }
+    if(((x1>=0.3 && x1<=0.65)&&(y1>=0.75 && y1<=0.9))){
+         printf("Exit Called \n");
+        exit(0);
+    }
+}
+
+void renderMainMenu(void){
+     //initializes the matrix and ortho so we can draw
     glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -2684,6 +2709,7 @@ void render(void){
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+//creates the title
     glPushMatrix();
     glLoadIdentity();
     glColor3f(1.0f,1.0f,1.0f);
@@ -2691,11 +2717,13 @@ void render(void){
     glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "CRAFT");
     glPopMatrix();
 
+//first button
     glPushMatrix();
     glTranslatef(0.0, 0.1, 0.0);
     renderButtonBackground();
     glPopMatrix();
 
+//first button text
     glPushMatrix();
     glLoadIdentity();
     glColor3f(1.0f,1.0f,1.0f);
@@ -2703,11 +2731,13 @@ void render(void){
     glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Play Game");
     glPopMatrix();
 
+//second button
     glPushMatrix();
     glTranslatef(0.0, -0.2, 0.0);
     renderButtonBackground();
     glPopMatrix();
 
+//second button text
     glPushMatrix();
     glLoadIdentity();
     glColor3f(1.0f,1.0f,1.0f);
@@ -2715,32 +2745,25 @@ void render(void){
     glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Load Save");
     glPopMatrix();
 
+//third button
     glPushMatrix();
     glTranslatef(0.0, -0.5, 0.0);
     renderButtonBackground();
     glPopMatrix();
 
+//third buton text
     glPushMatrix();
     glLoadIdentity();
     glColor3f(1.0f,1.0f,1.0f);
     glRasterPos2f(0.45, 0.16);
-    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Options");
+    glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, "Exit Game");
     glPopMatrix();
 
     glutSwapBuffers();
 }
 
 
-void game_loop() {
-glutInit(&argc, argv);
-glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
-glutInitWindowSize (glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
-glutInitWindowPosition (0, 0);
-glutCreateWindow ("Craft menu");
-glutDisplayFunc(render);
-glutKeyboardFunc(processNormalKeys);
-glutMainLoop();
-
+void game_loop(int argc, char** argv) {
     // INITIALIZATION //
     curl_global_init(CURL_GLOBAL_DEFAULT);
     srand(time(NULL));
@@ -3124,11 +3147,20 @@ glutMainLoop();
 
 
 int main(int argc, char** argv) {
-// Isolating the game loop so main menu and save system can be placed here and call the game loop function.
-    
-    // Call Game loop
-    // TODO: Implement GLUT Main menu that allows for swapping between different save files.
-    // The main menu will allow for the database file to be changed through a menu.
-    game_loop();
+//initializes window and display length
+glutInit(&argc, argv);
+glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+glutInitWindowSize (glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
+glutInitWindowPosition (0, 0);
+glutCreateWindow ("Craft menu");
+//ensures we just exit the glut loop not close the program so we can still launch craft
+glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+glutDisplayFunc(renderMainMenu);
+glutKeyboardFunc(processNormalKeys);
+glutMouseFunc(handleMouseClick);
+glutMainLoop();
+if(launchCraft){
+game_loop(argc, **argv);
+}
 
 }
