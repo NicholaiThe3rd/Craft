@@ -2361,6 +2361,23 @@ void on_mouse_button(GLFWwindow *window, int button, int action, int mods) {
     }
 }
 
+// Skeletonized Escape output to generate pause menu. Pause menu will be generated on ESC press.
+void handle_escape_input()
+{
+}
+
+// Skeletonize pause menu. TODO: Generate two buttons that are "Resume" and "Save And Quit"
+bool generate_pause()
+{
+    boolean quit = false;
+    return quit;
+}
+
+// Skeletonize main menu. TODO: Generate 3 button menu, one "Play", one "Swap Save", and "Quit"
+// In reality the saves will be changing the database based on the save file selected.
+void generate_main()
+{}
+
 void create_window() {
     int window_width = WINDOW_WIDTH;
     int window_height = WINDOW_HEIGHT;
@@ -2566,6 +2583,7 @@ void parse_buffer(char *buffer) {
     }
 }
 
+
 void reset_model() {
     memset(g->chunks, 0, sizeof(Chunk) * MAX_CHUNKS);
     g->chunk_count = 0;
@@ -2624,7 +2642,8 @@ void render(void){
     glutSwapBuffers();
 }
 
-int main(int argc, char **argv) {
+
+void game_loop() {
     // startCraft(argc, **argv);
 glutInit(&argc, argv);
 glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
@@ -2634,10 +2653,6 @@ glutCreateWindow ("Craft menu");
 glutDisplayFunc(render);
 glutMainLoop();
 
-return 0;
-}
-
-int startCraft(int argc, char **argv) {
     // INITIALIZATION //
     curl_global_init(CURL_GLOBAL_DEFAULT);
     srand(time(NULL));
@@ -2706,10 +2721,10 @@ int startCraft(int argc, char **argv) {
     load_png_texture("textures/sign.png");
 
     // LOAD SHADERS //
-    Attrib block_attrib = {0};
-    Attrib line_attrib = {0};
-    Attrib text_attrib = {0};
-    Attrib sky_attrib = {0};
+    Attrib block_attrib = { 0 };
+    Attrib line_attrib = { 0 };
+    Attrib text_attrib = { 0 };
+    Attrib sky_attrib = { 0 };
     GLuint program;
 
     program = load_program(
@@ -2772,7 +2787,7 @@ int startCraft(int argc, char **argv) {
 
     // INITIALIZE WORKER THREADS
     for (int i = 0; i < WORKERS; i++) {
-        Worker *worker = g->workers + i;
+        Worker* worker = g->workers + i;
         worker->index = i;
         worker->state = WORKER_IDLE;
         mtx_init(&worker->mtx, mtx_plain);
@@ -2806,13 +2821,13 @@ int startCraft(int argc, char **argv) {
 
         // LOCAL VARIABLES //
         reset_model();
-        FPS fps = {0, 0, 0};
+        FPS fps = { 0, 0, 0 };
         double last_commit = glfwGetTime();
         double last_update = glfwGetTime();
         GLuint sky_buffer = gen_sky_buffer();
 
-        Player *me = g->players;
-        State *s = &g->players->state;
+        Player* me = g->players;
+        State* s = &g->players->state;
         me->id = 0;
         me->name[0] = '\0';
         me->buffer = 0;
@@ -2854,7 +2869,7 @@ int startCraft(int argc, char **argv) {
             handle_movement(dt);
 
             // HANDLE DATA FROM SERVER //
-            char *buffer = client_recv();
+            char* buffer = client_recv();
             if (buffer) {
                 parse_buffer(buffer);
                 free(buffer);
@@ -2881,7 +2896,7 @@ int startCraft(int argc, char **argv) {
             for (int i = 1; i < g->player_count; i++) {
                 interpolate_player(g->players + i);
             }
-            Player *player = g->players + g->observe1;
+            Player* player = g->players + g->observe1;
 
             // RENDER 3-D SCENE //
             glClear(GL_COLOR_BUFFER_BIT);
@@ -2944,7 +2959,7 @@ int startCraft(int argc, char **argv) {
                     render_text(&text_attrib, ALIGN_CENTER,
                         g->width / 2, ts, ts, player->name);
                 }
-                Player *other = player_crosshair(player);
+                Player* other = player_crosshair(player);
                 if (other) {
                     render_text(&text_attrib, ALIGN_CENTER,
                         g->width / 2, g->height / 2 - ts - 24, ts,
@@ -2987,6 +3002,8 @@ int startCraft(int argc, char **argv) {
                 }
             }
 
+            // TODO: Similar statement is used to escape from game loop after pause menu.
+
             // SWAP AND POLL //
             glfwSwapBuffers(g->window);
             glfwPollEvents();
@@ -3014,4 +3031,16 @@ int startCraft(int argc, char **argv) {
     glfwTerminate();
     curl_global_cleanup();
     return 0;
+}
+
+
+
+int main(int argc, char** argv) {
+// Isolating the game loop so main menu and save system can be placed here and call the game loop function.
+    
+    // Call Game loop
+    // TODO: Implement GLUT Main menu that allows for swapping between different save files.
+    // The main menu will allow for the database file to be changed through a menu.
+    game_loop();
+
 }
