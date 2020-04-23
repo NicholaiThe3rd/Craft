@@ -12,7 +12,10 @@ add_executable(
     deps/noise/noise.c
     deps/sqlite/sqlite3.c
     deps/tinycthread/tinycthread.c)
-
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+include_directories(${OPENGL_INCLDUE_DIRS} ${GLUT_INCLUDE_DIRS})
+target_link_libraries(craft ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 add_definitions(-std=c99 -O3)
 
 add_subdirectory(deps/glfw)
