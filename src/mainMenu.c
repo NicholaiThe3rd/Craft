@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <GL/glut.h>
 #include <GL/freeglut.h>
+#include "loadSaveMenu.h"
 
 int launchCraft;
 //used as an additional check for the load save menu so it will
