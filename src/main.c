@@ -157,9 +157,10 @@ typedef struct {
 } Model;
 
 static int launchCraft;
-//TODO:will be used as an additional check for the load save menu so it will
+//used as an additional check for the load save menu so it will
 //fire the correct events on click and not the ones for main menu
 static int loadSaveMenuLaunched;
+static int disableMainMenuClicks;
 static Model model;
 static Model *g = &model;
 
@@ -2679,12 +2680,16 @@ void reset_model() {
     g->time_changed = 1;
 }
 
-//determines the location a user clicked with their mouse so we can call the button methods
+/** handles a users mouse click by getting the position of their click then executing an appropriate response
+*/
 void handleMouseClick(int button, int state,int x, int y){
     //we float the values by screen height and width so we can fit them within our
     //ortho matrix
     float x1=x/(float)glutGet(GLUT_SCREEN_WIDTH);
     float y1=y/(float)glutGet(GLUT_SCREEN_HEIGHT);
+    printf("x: %f \n",x1);
+     printf("y: %f \n",y1);
+    if(!loadSaveMenuLaunched){
     if(((x1>=0.3 && x1<=0.65)&&(y1>=0.15 && y1<=0.3))){
         launchCraft=1;
         printf("Launch Craft Called \n");
@@ -2693,11 +2698,46 @@ void handleMouseClick(int button, int state,int x, int y){
     if(((x1>=0.3 && x1<=0.65)&&(y1>=0.45 && y1<=0.6))){
         //TODO: clear the glut window and render a new screen that will allow the user to choose a saved world or start a new one
         printf("Load Save Called \n");
+        x1=0;
+        y1=0;
         renderLoadSaveMenu();
+        loadSaveMenuLaunched=1;
     }
     if(((x1>=0.3 && x1<=0.65)&&(y1>=0.75 && y1<=0.9))){
          printf("Exit Called \n");
         exit(0);
+    }
+    //loadSaveMenuLaunched ensures we won't call any main menu clicks while on load save
+    }else if(loadSaveMenuLaunched){
+        //we need this boolean as clicking in GLUT happens in two parts onclick and on release
+        //becasue of this this method gets called twice on the menu and this boolean ensures we aren't immediately
+        //loading a world when clicking load save
+        if(disableMainMenuClicks){
+        if(((x1>=0.05 && x1<=0.15)&&(y1>=0.01 && y1<=0.4))){
+            //back
+            printf("back called \n");
+            renderMainMenu();
+            loadSaveMenuLaunched=0;
+            disableMainMenuClicks=0;
+        }
+        if(((x1>=0.3 && x1<=0.65)&&(y1>=0.15 && y1<=0.3))){
+            //World1
+             launchCraft=1;
+             printf("Load World 1 \n");
+             glutLeaveMainLoop();
+            
+        }
+        if(((x1>=0.3 && x1<=0.65)&&(y1>=0.45 && y1<=0.6))){
+            //world2
+            printf("Load World 2 \n");
+        }
+        if(((x1>=0.3 && x1<=0.65)&&(y1>=0.75 && y1<=0.9))){
+            //world3
+            printf("Load World 3 \n");
+        }
+        }else{
+            disableMainMenuClicks=1;
+        }
     }
 }
 
