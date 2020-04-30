@@ -3,5 +3,5 @@
 #include <stdbool.h>
 
 int main (){
-renderMainMenu();;
+renderMainMenu();
 }
