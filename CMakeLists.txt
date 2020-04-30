@@ -12,8 +12,19 @@ add_executable(
     deps/noise/noise.c
     deps/sqlite/sqlite3.c
     deps/tinycthread/tinycthread.c)
+
+
     add_executable(handleMouseClick tests/handleMouseClick.c)
     add_library(MyLib src/mainMenu.c src/mainMenu.h src/loadSaveMenu.h src/loadSaveMenu.c ) 
+    add_executable(initializeMainMenu tests/initializeMainMenu.c)
+    add_executable(processNormalKeys tests/processNormalKeys.c)
+    add_executable(renderButtonBackground tests/renderButtonBackground.c)
+    add_executable(renderLoadButtonBackground tests/renderLoadButtonBackground.c)
+    add_executable(renderLoadSaveMenu tests/renderLoadSaveMenu.c)
+    add_executable(renderMainMenu tests/renderMainMenu.c)
+
+
+
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 include_directories(${OPENGL_INCLDUE_DIRS} ${GLUT_INCLUDE_DIRS})
@@ -21,10 +32,25 @@ target_link_libraries(craft ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 add_definitions(-std=c99 -O3)
 
 target_link_libraries(handleMouseClick MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+target_link_libraries(initializeMainMenu MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+target_link_libraries(processNormalKeys MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+target_link_libraries(renderButtonBackground MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+target_link_libraries(renderLoadButtonBackground MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+target_link_libraries(renderLoadSaveMenu MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+target_link_libraries(renderMainMenu MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
 enable_testing()
 add_test( handleClickTest handleMouseClick)
 set_tests_properties(handleClickTest PROPERTIES WILL_FAIL TRUE)
+add_test( initializeMainMenuTest initializeMainMenu)
+add_test( processNormalKeysTest processNormalKeys)
+add_test( renderButtonBackgroundTest renderButtonBackground)
+add_test( renderLoadButtonBackgroundTest renderLoadButtonBackground)
+add_test( renderLoadSaveMenuTest renderLoadSaveMenu)
+set_tests_properties(renderLoadSaveMenuTest PROPERTIES WILL_FAIL TRUE)
+add_test( renderMainMenuTest renderMainMenu)
+set_tests_properties(renderMainMenuTest PROPERTIES WILL_FAIL TRUE)
+
 
 add_subdirectory(deps/glfw)
 include_directories(deps/glew/include)
