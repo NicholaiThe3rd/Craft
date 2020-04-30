@@ -12,11 +12,19 @@ add_executable(
     deps/noise/noise.c
     deps/sqlite/sqlite3.c
     deps/tinycthread/tinycthread.c)
+    add_executable(handleMouseClick tests/handleMouseClick.c)
+    add_library(MyLib src/mainMenu.c src/mainMenu.h src/loadSaveMenu.h src/loadSaveMenu.c ) 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 include_directories(${OPENGL_INCLDUE_DIRS} ${GLUT_INCLUDE_DIRS})
 target_link_libraries(craft ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 add_definitions(-std=c99 -O3)
+
+target_link_libraries(handleMouseClick MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+
+enable_testing()
+add_test( handleClickTest handleMouseClick)
+set_tests_properties(handleClickTest PROPERTIES WILL_FAIL TRUE)
 
 add_subdirectory(deps/glfw)
 include_directories(deps/glew/include)

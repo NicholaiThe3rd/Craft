@@ -114,8 +114,8 @@ void handleMouseClick(int button, int state,int x, int y){
     //ortho matrix
     float x1=x/(float)glutGet(GLUT_SCREEN_WIDTH);
     float y1=y/(float)glutGet(GLUT_SCREEN_HEIGHT);
-    printf("x: %f \n",x1);
-     printf("y: %f \n",y1);
+    printf("x1: %f \n",x1);
+     printf("y1: %f \n",y1);
     if(!loadSaveMenuLaunched){
     if(((x1>=0.3 && x1<=0.65)&&(y1>=0.15 && y1<=0.3))){
         launchCraft=1;
