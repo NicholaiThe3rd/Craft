@@ -1,0 +1,2 @@
+void renderLoadButtonBackground();
+void renderLoadSaveMenu();
