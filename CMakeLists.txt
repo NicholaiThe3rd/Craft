@@ -25,7 +25,8 @@ add_executable(
     deps/sqlite/sqlite3.c
     deps/tinycthread/tinycthread.c)
 
-
+#creates a library that has the class files I'm testing so I can link later
+#adds executables for each method I'm testing so they can be tested seperately
     add_executable(handleMouseClick tests/handleMouseClick.c)
     add_library(MyLib src/mainMenu.c src/mainMenu.h src/loadSaveMenu.h src/loadSaveMenu.c ) 
     add_executable(initializeMainMenu tests/initializeMainMenu.c)
@@ -69,6 +70,7 @@ include_directories(${OPENGL_INCLDUE_DIRS} ${GLUT_INCLUDE_DIRS})
 target_link_libraries(craft ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 add_definitions(-std=c99 -O3)
 
+#necessary to link the files we are testing with the executables won't compile without this
 target_link_libraries(handleMouseClick MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 target_link_libraries(initializeMainMenu MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 target_link_libraries(processNormalKeys MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
@@ -78,6 +80,7 @@ target_link_libraries(renderLoadSaveMenu MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRAR
 target_link_libraries(renderMainMenu MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 target_link_libraries(mainMenuTest MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
+#creates the tests
 enable_testing()
 add_test( handleClickTest handleMouseClick)
 set_tests_properties(handleClickTest PROPERTIES WILL_FAIL TRUE)

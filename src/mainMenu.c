@@ -4,12 +4,15 @@
 #include <GL/freeglut.h>
 #include "loadSaveMenu.h"
 
-int launchCraft;
-//used as an additional check for the load save menu so it will
-//fire the correct events on click and not the ones for main menu
-static int loadSaveMenuLaunched;
-static int disableMainMenuClicks;
+int launchCraft; ///<determines  that we should launch craft after exiting the GLUT loop
+static int loadSaveMenuLaunched; ///< used as an additional check for the load save menu so it will 
+                                 ///<fire the correct events on click and not the ones for main menu
+static int disableMainMenuClicks; ///< disables main menu buttons so we dont click multiple menu options
 
+///
+/// Creates a window for the main menu to reside in that is fullscreen but windowed
+/// also sets up the functions for handling mouse and keyboard clicks
+///
 void initializeMainMenu(int argc, char** argv){
 glutInit(&argc, argv);
 glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
@@ -24,6 +27,9 @@ glutMouseFunc(handleMouseClick);
 glutMainLoop();
 }
 
+///
+/// renders the objects that make up the main menu as well as the text
+///
 void renderMainMenu(void){
      //initializes the matrix and ortho so we can draw
     glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
@@ -89,6 +95,10 @@ void renderMainMenu(void){
     glutSwapBuffers();
 }
 
+///
+/// renders the background for the buttons to help readability
+/// and lower duplicated code
+///
 void renderButtonBackground(void)
 {
 glColor3f (0.5, 0.5, 0.5);
@@ -100,15 +110,18 @@ glVertex3f (0.30, 0.75, 0.0);
 glEnd();
 }
 
-//determines the keys a user presses and does certain actaions based on them
+///
+///determines the keys a user presses and does certain actaions based on them
+///
 void processNormalKeys(unsigned char key, int x, int y) {
 
 	if (key == 27)
 		exit(0);
 }
 
-/** handles a users mouse click by getting the position of their click then executing an appropriate response
-*/
+///
+/// handles a users mouse click by getting the position of their click then executing an appropriate response
+///
 void handleMouseClick(int button, int state,int x, int y){
     //we float the values by screen height and width so we can fit them within our
     //ortho matrix
@@ -123,7 +136,6 @@ void handleMouseClick(int button, int state,int x, int y){
         glutLeaveMainLoop();
     }
     if(((x1>=0.3 && x1<=0.65)&&(y1>=0.45 && y1<=0.6))){
-        //TODO: clear the glut window and render a new screen that will allow the user to choose a saved world or start a new one
         printf("Load Save Called \n");
         x1=0;
         y1=0;
@@ -148,18 +160,15 @@ void handleMouseClick(int button, int state,int x, int y){
             disableMainMenuClicks=0;
         }
         if(((x1>=0.3 && x1<=0.65)&&(y1>=0.15 && y1<=0.3))){
-            //World1
              launchCraft=1;
              printf("Load World 1 \n");
              glutLeaveMainLoop();
             
         }
         if(((x1>=0.3 && x1<=0.65)&&(y1>=0.45 && y1<=0.6))){
-            //world2
             printf("Load World 2 \n");
         }
         if(((x1>=0.3 && x1<=0.65)&&(y1>=0.75 && y1<=0.9))){
-            //world3
             printf("Load World 3 \n");
         }
         }else{

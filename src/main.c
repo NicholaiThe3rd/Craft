@@ -2661,6 +2661,9 @@ void reset_model() {
     g->time_changed = 1;
 }
 
+///
+/// launches craft
+///
 void game_loop(int argc, char** argv) {
     // INITIALIZATION //
     curl_global_init(CURL_GLOBAL_DEFAULT);
