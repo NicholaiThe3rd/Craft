@@ -4,6 +4,18 @@ project(craft)
 
 FILE(GLOB SOURCE_FILES src/*.c)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE OFF)
+
+set(OBJECT_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/mainMenuTest.dir/tests)
+message("-- Object files will be output to: ${OBJECT_DIR}")
+
+set(SOURCES
+    mainMenu.c
+    handleMouseClick.c
+   )
+
 add_executable(
     craft
     ${SOURCE_FILES}
@@ -22,7 +34,33 @@ add_executable(
     add_executable(renderLoadButtonBackground tests/renderLoadButtonBackground.c)
     add_executable(renderLoadSaveMenu tests/renderLoadSaveMenu.c)
     add_executable(renderMainMenu tests/renderMainMenu.c)
+    add_executable(mainMenuTest tests/mainMenuTest.c)
 
+# Create the gcov target. Run coverage tests with 'make gcov'
+add_custom_target(gcov
+    COMMAND mkdir -p coverage
+    COMMAND ${CMAKE_MAKE_PROGRAM} test
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+add_custom_command(TARGET gcov
+    COMMAND echo "=================== GCOV ===================="
+    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/*.c -o ${OBJECT_DIR}
+    | grep -A 5 "mainMenu.c" > CoverageSummary.tmp
+    COMMAND cat CoverageSummary.tmp
+    COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/coverage"
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage
+    )
+add_dependencies(gcov handleMouseClick)
+set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES coverage)
+
+# Create the gcov-clean target. This cleans the build as well as generated 
+# .gcda and .gcno files.
+add_custom_target(scrub
+COMMAND ${CMAKE_MAKE_PROGRAM} clean
+COMMAND rm -f ${OBJECT_DIR}/*.gcno
+COMMAND rm -f ${OBJECT_DIR}/*.gcda
+WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
 
 
 find_package(OpenGL REQUIRED)
@@ -38,6 +76,7 @@ target_link_libraries(renderButtonBackground MyLib ${OPENGL_LIBRARIES} ${GLUT_LI
 target_link_libraries(renderLoadButtonBackground MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 target_link_libraries(renderLoadSaveMenu MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 target_link_libraries(renderMainMenu MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+target_link_libraries(mainMenuTest MyLib ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 
 enable_testing()
 add_test( handleClickTest handleMouseClick)
@@ -50,6 +89,8 @@ add_test( renderLoadSaveMenuTest renderLoadSaveMenu)
 set_tests_properties(renderLoadSaveMenuTest PROPERTIES WILL_FAIL TRUE)
 add_test( renderMainMenuTest renderMainMenu)
 set_tests_properties(renderMainMenuTest PROPERTIES WILL_FAIL TRUE)
+add_test(mainMenuTest mainMenuTest)
+set_tests_properties(mainMenuTest PROPERTIES WILL_FAIL TRUE)
 
 
 add_subdirectory(deps/glfw)

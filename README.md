@@ -64,6 +64,14 @@ terminal.
     make
     ./craft
 
+### Testing
+After building the project cd into the build folder and run ctest or ctest -VV to get test output from all tests
+
+To generate code coverage for functions related to the Main Menu from build cd into /CMakeFiles/mainMenuTest.dir/tests
+Once there you can use gcov to generate the code coverage by using the following command
+
+    gcov mainMenuTest.c.gcno
+
 ### Multiplayer
 
 Register for an account!
@@ -216,3 +224,5 @@ http://0fps.wordpress.com/2013/07/03/ambient-occlusion-for-minecraft-like-worlds
 * lodepng is used for loading PNG textures.
 * sqlite3 is used for saving the blocks added / removed by the user.
 * tinycthread is used for cross-platform threading.
+
+
